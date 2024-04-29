@@ -5,8 +5,13 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    public bool beginChase = false;
+
+    PlayerController playerController;
+
+    private bool enemyStartRun = false;
     public bool wakeEnemy = false;
+
+    public GameObject enemy;
 
     public Animator enemyAnimator;
 
@@ -23,6 +28,13 @@ public class GameController : MonoBehaviour
         {
             Debug.Log("EnemyAwake");
             enemyAnimator.speed = 1.5f;
+        }
+        if (playerController.startChase)
+        {
+            if (enemyStartRun == true)
+            {
+                enemy.transform.position = new Vector2(30, 10);
+            }
         }
     }
 

@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     private bool crateBroken = false;
     private bool canPaus = true;
     public bool menuActive = false;
-
+    public bool startChase = false;
     private double gameStart = 0;
     private bool startGame = false;
 
@@ -87,7 +87,7 @@ public class PlayerController : MonoBehaviour
             CinemachineShake.Instance.shakeCamera(1f, 5f);
         }
 
-            if (menuActive == false)
+        if (menuActive == false)
         {
 
             animator.speed = 1f;
@@ -103,12 +103,20 @@ public class PlayerController : MonoBehaviour
             {
                 playerSprite.enabled = true;
             }
-            else if (startGame == true && Time.time > gameStart + 6.9 && moving == false)
+            else if (startGame == true && Time.time > gameStart + 3 && moving == false)
             {
+                CinemachineShake.Instance.shakeCamera(4f, 0.5f);
+                CinemachineShake.Instance.shakeCamera(1f, 10f);
+
                 moving = true;
                 Debug.Log("run");
             }
 
+            
+            if (startChase == true)
+            {
+                
+            }
         }
 
         if (menuActive == true)
@@ -127,11 +135,21 @@ public class PlayerController : MonoBehaviour
         }
         
 
+
+
         animator.SetBool("Running", isRunning);
 
     }
-    void SetTransformCoord(float x, float y)
+    public void SetTransformCoord(float x, float y)
     {
         transform.position = new Vector2(x, y);
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "StartChase" && startChase == false)
+        {
+            Debug.Log("ChaseBegin");
+            startChase = true;
+        }
     }
 }
