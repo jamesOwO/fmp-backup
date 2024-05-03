@@ -6,36 +6,60 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
 
-    PlayerController playerController;
+    public PlayerController playerController;
 
-    private bool enemyStartRun = false;
+    public float enemySpeed;
+    private bool enemyRunning = false;
+    private bool enemyStartRun = true;
     public bool wakeEnemy = false;
 
-    public GameObject enemy;
-
+    public GameObject player;
+    public GameObject enemyChase;
+    public GameObject enemyCutscene;
+    private Rigidbody2D enemyrb;
     public Animator enemyAnimator;
 
     // Start is called before the first frame update
     void Start()
     {
+        enemyrb = enemyChase.GetComponent<Rigidbody2D>();
+        enemyAnimator = enemyCutscene.GetComponent<Animator>();
         enemyAnimator.speed = 0;
     }
 
     // Update is called once per frame
+    private void FixedUpdate()
+    {
+         if (enemyRunning == true)
+         {
+            enemyrb.velocity = new Vector2(1 * enemySpeed, enemyrb.velocity.y);
+         }
+    }
+
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            enemyChase.transform.position = new Vector2(20, enemyChase.transform.position.y);
+        }
+
         if (wakeEnemy)
         {
-            Debug.Log("EnemyAwake");
             enemyAnimator.speed = 1.5f;
+            wakeEnemy= false;
         }
         if (playerController.startChase)
         {
             if (enemyStartRun == true)
             {
-                enemy.transform.position = new Vector2(30, 10);
+                enemyChase.SetActive(true);
+                enemyChase.transform.position = new Vector2(-15, enemyChase.transform.position.y);
+                //enemyAnimator.SetBool("StartRun", true);
+                enemyRunning = true;
+                enemyStartRun = false;
             }
+
+            Debug.Log(player.transform.position.x - enemyChase.transform.position.x);
         }
     }
-
 }

@@ -80,7 +80,6 @@ public class PlayerController : MonoBehaviour
     }
     private void Update()
     {
-        Debug.Log(Time.time);
 
         if (Input.GetKeyDown(KeyCode.I))
         {
@@ -109,7 +108,6 @@ public class PlayerController : MonoBehaviour
                 CinemachineShake.Instance.shakeCamera(1f, 10f);
 
                 moving = true;
-                Debug.Log("run");
             }
 
             
@@ -122,7 +120,6 @@ public class PlayerController : MonoBehaviour
         if (menuActive == true)
         {
             animator.speed = 0f;
-            //cageAnimator.speed = 0f;
         }
 
         if (Input.GetKeyDown(KeyCode.P) && canPaus == true)
@@ -133,9 +130,7 @@ public class PlayerController : MonoBehaviour
                 pauseMenu.SetActive(true);
             }
         }
-        
-
-
+       
 
         animator.SetBool("Running", isRunning);
 
@@ -148,7 +143,6 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.tag == "StartChase" && startChase == false)
         {
-            Debug.Log("ChaseBegin");
             startChase = true;
         }
     }
