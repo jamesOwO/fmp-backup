@@ -1364,6 +1364,7 @@ MonoBehaviour:
   enemyChase: {fileID: 1291326510}
   enemyCutscene: {fileID: 336528692}
   enemyAnimator: {fileID: 336528694}
+  enemyArm: {fileID: 1233271363}
 --- !u!1 &708320441
 GameObject:
   m_ObjectHideFlags: 0
