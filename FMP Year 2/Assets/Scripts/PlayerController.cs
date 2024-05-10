@@ -21,12 +21,16 @@ public class PlayerController : MonoBehaviour
     private double gameStart = 0;
     private bool startGame = false;
 
+    
+    private bool Jumpable = false, jumpDelay = false;
     private bool moving = false;
     public float moveSpeed;
     private float movehorizontal;
-    private float jumpforce;
+    public float jumpForceUp, jumpForceRight;
     private bool isjumping;
+    private float jumpCooldown = 0;
     private bool isRunning = false;
+    private bool grounded = false;
 
     public GameObject camera;
     private Component cinemachine;
@@ -46,7 +50,6 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
 
         //moveSpeed = 7f;
-        jumpforce = 10f;
         coll = GetComponent<BoxCollider2D>();
         SetTransformCoord(cage.transform.position.x - 3.3f, -0f);
     }
@@ -80,23 +83,45 @@ public class PlayerController : MonoBehaviour
     }
     private void Update()
     {
+        /*
+                if (isjumping == true && jumpCooldown - 2 <= Time.time)
+                {
+                    isjumping = false;
 
-        if (Input.GetKeyDown(KeyCode.I))
+                    animator.SetBool("Jumping", false);
+                }
+        */
+        /*
+        if (jumpDelay == true && jumpCooldown <= Time.time)
         {
-            CinemachineShake.Instance.shakeCamera(1f, 5f);
+            rb.velocity = new Vector2(jumpForceRight, jumpForceUp);
+            isjumping = true;
+            jumpDelay = false;
         }
 
+        */
         if (menuActive == false)
         {
-
             animator.speed = 1f;
-            if (Input.GetButtonDown("Jump") && startGame == false)
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                gameController.wakeEnemy = true;
-                startGame = true;
-                cageAnimator.SetBool("Fall", true);
-                Console.WriteLine("Spacebar down");
-                gameStart = Time.time + 2.6;
+                if (startGame == true && grounded == true && Jumpable == true)
+                {
+                    rb.velocity = new Vector2(jumpForceRight, jumpForceUp);
+                    Debug.Log("Jump");
+                    animator.SetBool("Jumping", true);
+                    jumpCooldown = Time.time + 0.3f;
+                    jumpDelay = true;
+                    isjumping= true;
+                }
+                if (startGame == false)
+                {
+                    gameController.wakeEnemy = true;
+                    startGame = true;
+                    cageAnimator.SetBool("Fall", true);
+                    Console.WriteLine("Spacebar down");
+                    gameStart = Time.time + 1;
+                }
             }
             if (startGame == true && Time.time > gameStart && playerSprite.enabled == false)
             {
@@ -106,7 +131,7 @@ public class PlayerController : MonoBehaviour
             {
                 CinemachineShake.Instance.shakeCamera(4f, 0.5f);
                 CinemachineShake.Instance.shakeCamera(1f, 10f);
-
+                Jumpable = true;
                 moving = true;
             }
 
@@ -146,4 +171,24 @@ public class PlayerController : MonoBehaviour
             startChase = true;
         }
     }
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Ground")
+        {
+            if (isjumping == true )
+            {
+                animator.SetBool("Jumping", false);
+                isjumping = false;
+            }
+            grounded = true;
+            Debug.Log(grounded + " Grounded is true");
+            Debug.Log(isjumping + " isjumping is true");
+
+        }
+        else
+        {
+            grounded = false;
+        }
+    }
+    
 }

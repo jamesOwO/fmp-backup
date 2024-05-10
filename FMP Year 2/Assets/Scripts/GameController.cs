@@ -65,14 +65,14 @@ public class GameController : MonoBehaviour
             }
 
             Debug.Log(player.transform.position.x - enemyChase.transform.position.x);
-            if (distanceFromMan < 25 && startAttack == false)
+            if (distanceFromMan < 20 && startAttack == false)
             {
                 enemySpeed = 2.5f;
                 startAttack = true;
             }
-            if (distanceFromMan >= 30)
+            if (distanceFromMan >= 40)
             {
-                enemySpeed = 5f;
+                enemySpeed = 7f;
                 startAttack = false;
             }
             if (startAttack == true)
