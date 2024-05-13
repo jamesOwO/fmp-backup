@@ -79,10 +79,16 @@ public class PlayerController : MonoBehaviour
                     isRunning = false;
                 }
             }
+            if (isjumping == true)
+            {
+                rb.velocity = new Vector2(5f, rb.velocity.y);
+
+            }
         }
     }
     private void Update()
     {
+        Debug.Log(grounded + " Grounded");
         /*
                 if (isjumping == true && jumpCooldown - 2 <= Time.time)
                 {
@@ -107,12 +113,12 @@ public class PlayerController : MonoBehaviour
             {
                 if (startGame == true && grounded == true && Jumpable == true)
                 {
-                    rb.velocity = new Vector2(jumpForceRight, jumpForceUp);
+                    rb.velocity = new Vector2(20f, jumpForceUp);
                     Debug.Log("Jump");
                     animator.SetBool("Jumping", true);
-                    jumpCooldown = Time.time + 0.3f;
+                    jumpCooldown = Time.time + 1f;
                     jumpDelay = true;
-                    isjumping= true;
+                    isjumping = true;
                 }
                 if (startGame == false)
                 {
@@ -127,7 +133,7 @@ public class PlayerController : MonoBehaviour
             {
                 playerSprite.enabled = true;
             }
-            else if (startGame == true && Time.time > gameStart + 3 && moving == false)
+            else if (startGame == true && Time.time > gameStart + 4 && moving == false)
             {
                 CinemachineShake.Instance.shakeCamera(4f, 0.5f);
                 CinemachineShake.Instance.shakeCamera(1f, 10f);
@@ -170,25 +176,28 @@ public class PlayerController : MonoBehaviour
         {
             startChase = true;
         }
+        grounded = true;
     }
     private void OnCollisionStay2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Ground")
         {
-            if (isjumping == true )
+            if (isjumping == true && jumpCooldown < Time.time)
             {
                 animator.SetBool("Jumping", false);
                 isjumping = false;
             }
+            
+            
             grounded = true;
-            Debug.Log(grounded + " Grounded is true");
-            Debug.Log(isjumping + " isjumping is true");
+            
 
         }
-        else
-        {
-            grounded = false;
-        }
     }
-    
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        grounded = false;
+
+    }
+
 }
