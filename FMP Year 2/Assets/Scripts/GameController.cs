@@ -15,6 +15,7 @@ public class GameController : MonoBehaviour
     private bool enemyStartRun = true;
     public bool wakeEnemy = false;
 
+    
     public GameObject player;
     public GameObject enemyChase;
     public GameObject enemyCutscene;
@@ -65,19 +66,19 @@ public class GameController : MonoBehaviour
             }
 
             Debug.Log(player.transform.position.x - enemyChase.transform.position.x);
-            if (distanceFromMan < 20 && startAttack == false)
+            if (distanceFromMan < 22 && startAttack == false)
             {
-                enemySpeed = 2.5f;
+                enemySpeed = 2f;
                 startAttack = true;
             }
-            if (distanceFromMan >= 40)
+            if (distanceFromMan >= 30)
             {
-                enemySpeed = 7f;
-                startAttack = false;
+                enemySpeed = 6f;
             }
             if (startAttack == true)
-            { 
-                enemyArm.SetTrigger("attack");
+            {
+                enemyArm.Play("Attack");
+                startAttack = false;
 
             }
         }

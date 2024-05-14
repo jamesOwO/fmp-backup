@@ -8,29 +8,24 @@ using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.UI;
 using Cinemachine;
-
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
     public GameController gameController;
 
     private bool crateBroken = false;
-    private bool canPaus = true;
+    private bool canPaus = false;
     public bool menuActive = false;
     public bool startChase = false;
     private double gameStart = 0;
     private bool startGame = false;
 
+    private float playerAcceleration = 0, changedDirection, movehorizontal, jumpCooldown = 0, sceneTransitionCooldown;
+    private bool Jumpable = false, jumpDelay = false, moving = false, isjumping, grounded = false, isRunning = false, playerDead = false, sceneTransitionStart;
+
+    public float moveSpeed, jumpForceUp, jumpForceRight;
     
-    private bool Jumpable = false, jumpDelay = false;
-    private bool moving = false;
-    public float moveSpeed;
-    private float movehorizontal;
-    public float jumpForceUp, jumpForceRight;
-    private bool isjumping;
-    private float jumpCooldown = 0;
-    private bool isRunning = false;
-    private bool grounded = false;
 
     public GameObject camera;
     private Component cinemachine;
@@ -41,7 +36,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask jumpableGround;
     public SpriteRenderer playerSprite;
     public Animator cageAnimator;
-    public Animator animator; 
+    public Animator animator;
+    public Animator sceneTransition;
 
     
 
@@ -56,13 +52,21 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        Debug.Log("Movement - " + playerAcceleration);
         if (menuActive == false)
         {
             if (moving == true)
             {
                 movehorizontal = Input.GetAxisRaw("Horizontal");
 
-                rb.velocity = new Vector2(movehorizontal * moveSpeed, rb.velocity.y);
+
+                if (playerAcceleration <= moveSpeed)
+                {
+                    playerAcceleration = playerAcceleration + 0.125f;
+                }
+
+
+                rb.velocity = new Vector2(movehorizontal * playerAcceleration, rb.velocity.y);
 
                 if (movehorizontal > 0.1)
                 {
@@ -78,34 +82,24 @@ public class PlayerController : MonoBehaviour
                 {
                     isRunning = false;
                 }
+                if (movehorizontal != changedDirection)
+                {
+                    playerAcceleration = 0;
+                }
+                changedDirection = movehorizontal;
+
             }
             if (isjumping == true)
             {
                 rb.velocity = new Vector2(5f, rb.velocity.y);
-
+                playerAcceleration = 0;
             }
         }
     }
     private void Update()
     {
         Debug.Log(grounded + " Grounded");
-        /*
-                if (isjumping == true && jumpCooldown - 2 <= Time.time)
-                {
-                    isjumping = false;
 
-                    animator.SetBool("Jumping", false);
-                }
-        */
-        /*
-        if (jumpDelay == true && jumpCooldown <= Time.time)
-        {
-            rb.velocity = new Vector2(jumpForceRight, jumpForceUp);
-            isjumping = true;
-            jumpDelay = false;
-        }
-
-        */
         if (menuActive == false)
         {
             animator.speed = 1f;
@@ -126,14 +120,14 @@ public class PlayerController : MonoBehaviour
                     startGame = true;
                     cageAnimator.SetBool("Fall", true);
                     Console.WriteLine("Spacebar down");
-                    gameStart = Time.time + 1;
+                    gameStart = Time.time + 2.5;
                 }
             }
             if (startGame == true && Time.time > gameStart && playerSprite.enabled == false)
             {
                 playerSprite.enabled = true;
             }
-            else if (startGame == true && Time.time > gameStart + 4 && moving == false)
+            else if (startGame == true && Time.time > gameStart + 3.5 && moving == false)
             {
                 CinemachineShake.Instance.shakeCamera(4f, 0.5f);
                 CinemachineShake.Instance.shakeCamera(1f, 10f);
@@ -144,7 +138,7 @@ public class PlayerController : MonoBehaviour
             
             if (startChase == true)
             {
-                
+                canPaus = true;   
             }
         }
 
@@ -159,9 +153,32 @@ public class PlayerController : MonoBehaviour
             {
                 menuActive = true;
                 pauseMenu.SetActive(true);
+                animator.speed = 0f;
             }
         }
+        if (Input.GetKeyDown(KeyCode.R) && playerDead == false)
+        {
+            Debug.Log("restart");
+            playerDead = true;
+        }
        
+
+        if (playerDead == true)
+        {
+            Debug.Log("restarting");
+
+            if (sceneTransitionStart == false)
+            {
+                sceneTransition.SetBool("Fade", true);
+                sceneTransitionCooldown = Time.time + 2;
+                sceneTransitionStart = true;
+            }
+            else if (sceneTransitionCooldown <= Time.time)
+            {
+                SceneManager.LoadScene(1);
+            }
+        }
+
 
         animator.SetBool("Running", isRunning);
 
@@ -186,6 +203,7 @@ public class PlayerController : MonoBehaviour
             {
                 animator.SetBool("Jumping", false);
                 isjumping = false;
+                
             }
             
             
