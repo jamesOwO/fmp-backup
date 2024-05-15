@@ -107,7 +107,7 @@ public class PlayerController : MonoBehaviour
             {
                 if (startGame == true && grounded == true && Jumpable == true)
                 {
-                    rb.velocity = new Vector2(20f, jumpForceUp);
+                    rb.velocity = new Vector2(rb.velocity.x, jumpForceUp);
                     Debug.Log("Jump");
                     animator.SetBool("Jumping", true);
                     jumpCooldown = Time.time + 1f;
@@ -166,6 +166,12 @@ public class PlayerController : MonoBehaviour
         if (playerDead == true)
         {
             Debug.Log("restarting");
+            moving= false;
+            animator.speed = 0f;
+            cageAnimator.speed = 0f;
+            gameController.enemyAnimator.speed = 0f;
+            gameController.enemyArm.speed = 0f;
+
 
             if (sceneTransitionStart == false)
             {
@@ -193,7 +199,10 @@ public class PlayerController : MonoBehaviour
         {
             startChase = true;
         }
-        grounded = true;
+        if (collision.tag == "EnemyCane")
+        {
+            playerDead = true;
+        }
     }
     private void OnCollisionStay2D(Collision2D collision)
     {
