@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
     private double gameStart = 0;
     private bool startGame = false;
 
-    private float playerAcceleration = 0, changedDirection, movehorizontal, jumpCooldown = 0, sceneTransitionCooldown;
+    private float playerAcceleration = 0, changedDirection, movehorizontal, jumpCooldown = 0, sceneTransitionCooldown, jumpDirection;
     private bool Jumpable = false, jumpDelay = false, moving = false, isjumping, grounded = false, isRunning = false, playerDead = false, sceneTransitionStart;
 
     public float moveSpeed, jumpForceUp, jumpForceRight;
@@ -91,9 +91,18 @@ public class PlayerController : MonoBehaviour
             }
             if (isjumping == true)
             {
-                rb.velocity = new Vector2(5f, rb.velocity.y);
-                playerAcceleration = 0;
+                if(jumpDirection == 0)
+                {
+                    rb.velocity = new Vector2(playerAcceleration * movehorizontal, rb.velocity.y);
+
+                }
+                else
+                {
+                    rb.velocity = new Vector2(5f * jumpDirection, rb.velocity.y);
+                    playerAcceleration = 0;
+                }
             }
+
         }
     }
     private void Update()
@@ -107,6 +116,8 @@ public class PlayerController : MonoBehaviour
             {
                 if (startGame == true && grounded == true && Jumpable == true)
                 {
+                    playerAcceleration = 0;
+                    jumpDirection = movehorizontal;
                     rb.velocity = new Vector2(rb.velocity.x, jumpForceUp);
                     Debug.Log("Jump");
                     animator.SetBool("Jumping", true);

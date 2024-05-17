@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -12,15 +13,17 @@ public class GameController : MonoBehaviour
     private float distanceFromMan = 0;
     public float enemySpeed;
     private bool enemyRunning = false;
-    private bool enemyStartRun = true;
+    private bool enemyStartRun = true, sceneTransitionStart;
     public bool wakeEnemy = false;
-
-    
+    public bool finalAttack = false;
+    private float attackCooldown = 0, sceneTransitionCooldown;
+    private bool loadNextScene;
+     
     public GameObject player;
     public GameObject enemyChase;
     public GameObject enemyCutscene;
     private Rigidbody2D enemyrb;
-    public Animator enemyAnimator, enemyArm;
+    public Animator enemyAnimator, enemyArm, treeTrunk, sceneTransition;
 
 
     // Start is called before the first frame update
@@ -29,6 +32,7 @@ public class GameController : MonoBehaviour
         enemyrb = enemyChase.GetComponent<Rigidbody2D>();
         enemyAnimator = enemyCutscene.GetComponent<Animator>();
         enemyAnimator.speed = 0f;
+        treeTrunk.speed = 0f;
     }
 
     // Update is called once per frame
@@ -66,23 +70,65 @@ public class GameController : MonoBehaviour
             }
 
             Debug.Log(player.transform.position.x - enemyChase.transform.position.x);
-            if (distanceFromMan < 21 && startAttack == false)
+            if (enemyChase.transform.position.x <= 265)
             {
-                enemySpeed = 2f;
-                startAttack = true;
+                if (distanceFromMan < 21 && startAttack == false)
+                {
+                    enemySpeed = 2f;
+                    startAttack = true;
+                }
+                if (distanceFromMan >= 25)
+                {
+                    enemySpeed = 4.5f;
+                }
+                if (distanceFromMan >= 30)
+                {
+                    enemySpeed = 6f;
+                }
             }
-            if (distanceFromMan >= 25)
+            else if (enemyChase.transform.position.x <= 274)
             {
-                enemySpeed = 4.5f;
+                if (distanceFromMan < 22)
+                {
+                    enemySpeed = 3;
+                }
             }
-            if (distanceFromMan >= 30)
+            else if (enemyChase.transform.position.x >= 275 && finalAttack == false)
             {
-                enemySpeed = 6f;
+                enemySpeed = 1f;
+                finalAttack = true;
+                attackCooldown = Time.time + 4f;
+                enemyArm.SetBool("FinalAttack", true);
+                enemyAnimator.SetBool("FinalAttack", true);
             }
+
+            if (finalAttack && attackCooldown <= Time.time)
+            {
+                treeTrunk.speed = 0.75f;
+            }
+            if (finalAttack && attackCooldown + 2 <= Time.time)
+            {
+                loadNextScene = true;
+            }
+
+
             if (startAttack == true)
             {
                 enemyArm.Play("Attack");
                 startAttack = false;
+            }
+            if (loadNextScene)
+            {
+                if (finalAttack && sceneTransitionStart == false)
+                {
+                    sceneTransition.SetBool("Fade", true);
+                    sceneTransitionCooldown = Time.time + 2;
+                    sceneTransitionStart = true;
+                }
+                if (finalAttack && sceneTransitionCooldown <= Time.time)
+                {
+                    SceneManager.LoadScene(1);
+                }
 
             }
         }
