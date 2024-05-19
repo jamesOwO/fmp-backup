@@ -97,7 +97,7 @@ public class GameController : MonoBehaviour
             {
                 enemySpeed = 1f;
                 finalAttack = true;
-                attackCooldown = Time.time + 4f;
+                attackCooldown = Time.time + 2.5f;
                 enemyArm.SetBool("FinalAttack", true);
                 enemyAnimator.SetBool("FinalAttack", true);
             }
@@ -105,8 +105,10 @@ public class GameController : MonoBehaviour
             if (finalAttack && attackCooldown <= Time.time)
             {
                 treeTrunk.speed = 0.75f;
+                loadNextScene = true;
+
             }
-            if (finalAttack && attackCooldown + 2 <= Time.time)
+            if (finalAttack && attackCooldown  <= Time.time)
             {
                 loadNextScene = true;
             }

@@ -25,7 +25,8 @@ public class PlayerController : MonoBehaviour
     private bool Jumpable = false, jumpDelay = false, moving = false, isjumping, grounded = false, isRunning = false, playerDead = false, sceneTransitionStart;
 
     public float moveSpeed, jumpForceUp, jumpForceRight;
-    
+
+    private bool endGame = false;
 
     public GameObject camera;
     private Component cinemachine;
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour
     public Animator cageAnimator;
     public Animator animator;
     public Animator sceneTransition;
+    public Animator motherAnimator;
 
     
 
@@ -196,6 +198,11 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        if (endGame == true)
+        {
+            motherAnimator.speed = 0f;
+        }
+
 
         animator.SetBool("Running", isRunning);
 
@@ -213,6 +220,11 @@ public class PlayerController : MonoBehaviour
         if (collision.tag == "EnemyCane")
         {
             playerDead = true;
+        }
+        if (collision.tag == "EndGame")
+        {
+            moving = false;
+            endGame = true;
         }
     }
     private void OnCollisionStay2D(Collision2D collision)
