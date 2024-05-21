@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
 {
     public GameController gameController;
 
+    public int scene;
+
     private bool crateBroken = false;
     private bool canPaus = false;
     public bool menuActive = false;
@@ -22,7 +24,7 @@ public class PlayerController : MonoBehaviour
     private bool startGame = false;
 
     private float playerAcceleration = 0, changedDirection, movehorizontal, jumpCooldown = 0, sceneTransitionCooldown, jumpDirection;
-    private bool Jumpable = false, jumpDelay = false, moving = false, isjumping, grounded = false, isRunning = false, playerDead = false, sceneTransitionStart;
+    private bool Jumpable = true, jumpDelay = false, moving = true, isjumping, grounded = false, isRunning = false, playerDead = false, sceneTransitionStart = false;
 
     public float moveSpeed, jumpForceUp, jumpForceRight;
 
@@ -40,6 +42,7 @@ public class PlayerController : MonoBehaviour
     public Animator animator;
     public Animator sceneTransition;
     public Animator motherAnimator;
+    public Animator pressstarttoplay;
 
     
 
@@ -49,7 +52,12 @@ public class PlayerController : MonoBehaviour
 
         //moveSpeed = 7f;
         coll = GetComponent<BoxCollider2D>();
-        SetTransformCoord(cage.transform.position.x - 3.3f, -0f);
+        if (scene == 1)
+        {
+            SetTransformCoord(cage.transform.position.x - 3.3f, -0f);
+            moving = false;
+            Jumpable = false;
+        }
     }
 
     void FixedUpdate()
@@ -116,7 +124,7 @@ public class PlayerController : MonoBehaviour
             animator.speed = 1f;
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (startGame == true && grounded == true && Jumpable == true)
+                if ((scene == 2 || startGame == true) && grounded == true && Jumpable == true)
                 {
                     playerAcceleration = 0;
                     jumpDirection = movehorizontal;
@@ -127,7 +135,7 @@ public class PlayerController : MonoBehaviour
                     jumpDelay = true;
                     isjumping = true;
                 }
-                if (startGame == false)
+                if (startGame == false && scene == 1)
                 {
                     gameController.wakeEnemy = true;
                     startGame = true;
@@ -136,22 +144,26 @@ public class PlayerController : MonoBehaviour
                     gameStart = Time.time + 2.5;
                 }
             }
-            if (startGame == true && Time.time > gameStart && playerSprite.enabled == false)
+            if (scene == 1)
             {
-                playerSprite.enabled = true;
-            }
-            else if (startGame == true && Time.time > gameStart + 3.5 && moving == false)
-            {
-                CinemachineShake.Instance.shakeCamera(4f, 0.5f);
-                CinemachineShake.Instance.shakeCamera(1f, 10f);
-                Jumpable = true;
-                moving = true;
-            }
+                if (startGame == true && Time.time > gameStart && playerSprite.enabled == false)
+                {
+                    playerSprite.enabled = true;
+                }
+                else if (startGame == true && Time.time > gameStart + 3.5 && moving == false)
+                {
+                    CinemachineShake.Instance.shakeCamera(4f, 0.5f);
+                    CinemachineShake.Instance.shakeCamera(1f, 10f);
+                    Jumpable = true;
+                    moving = true;
+                }
 
-            
-            if (startChase == true)
-            {
-                canPaus = true;   
+
+                if (startChase == true)
+                {
+                    canPaus = true;
+                }
+
             }
         }
 
@@ -174,7 +186,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("restart");
             playerDead = true;
         }
-       
+        
 
         if (playerDead == true)
         {
@@ -200,7 +212,22 @@ public class PlayerController : MonoBehaviour
 
         if (endGame == true)
         {
-            motherAnimator.speed = 0f;
+
+            motherAnimator.speed = 1f;
+            motherAnimator.SetBool("LookUp", true);
+
+            if (sceneTransitionStart == false)
+            {
+                Debug.Log("ooga");
+                sceneTransition.SetBool("Fade", true);
+                sceneTransitionCooldown = Time.time + 3;
+                sceneTransitionStart = true;
+            }
+            else if (sceneTransitionCooldown <= Time.time)
+            {
+                SceneManager.LoadScene(0);
+            }
+
         }
 
 

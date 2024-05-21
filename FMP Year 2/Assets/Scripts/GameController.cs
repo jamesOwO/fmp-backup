@@ -9,6 +9,8 @@ public class GameController : MonoBehaviour
 
     public PlayerController playerController;
 
+    private float startTime;
+    
     private bool startAttack = false;
     private float distanceFromMan = 0;
     public float enemySpeed;
@@ -23,7 +25,7 @@ public class GameController : MonoBehaviour
     public GameObject enemyChase;
     public GameObject enemyCutscene;
     private Rigidbody2D enemyrb;
-    public Animator enemyAnimator, enemyArm, treeTrunk, sceneTransition;
+    public Animator enemyAnimator, enemyArm, treeTrunk, sceneTransition, pressSpaceToStart;
 
 
     // Start is called before the first frame update
@@ -33,6 +35,7 @@ public class GameController : MonoBehaviour
         enemyAnimator = enemyCutscene.GetComponent<Animator>();
         enemyAnimator.speed = 0f;
         treeTrunk.speed = 0f;
+        startTime = Time.time;
     }
 
     // Update is called once per frame

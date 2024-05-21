@@ -5,7 +5,7 @@ using static UnityEngine.LightAnchor;
 
 public class CameraFollow : MonoBehaviour
 {
-
+    public int scene;
     public PlayerController playerController;
     public GameController gameController;
 
@@ -28,18 +28,28 @@ public class CameraFollow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gameController.finalAttack)
-        { 
-            differenceX = targetX - this.transform.position.x;
-            differenceY = targetY- this.transform.position.y;
+        if ( scene == 1)
+        {
+            if (gameController.finalAttack)
+            {
 
-            rb.velocity = new Vector2(differenceX, rb.velocity.y);
+
+                differenceX = targetX - this.transform.position.x;
+                differenceY = targetY - this.transform.position.y;
+
+                rb.velocity = new Vector2(differenceX, rb.velocity.y);
+
+            }
+            else
+            {
+                this.transform.position = new Vector2(player.transform.position.x, 1.5f);
+
+            }
 
         }
-        else
+        else if(scene == 2)
         {
             this.transform.position = new Vector2(player.transform.position.x, 1.5f);
-
         }
     }
 }
