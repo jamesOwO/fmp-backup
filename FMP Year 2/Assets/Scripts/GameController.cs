@@ -9,7 +9,7 @@ public class GameController : MonoBehaviour
 
     public PlayerController playerController;
 
-    private float startTime;
+    public bool treeFall = false;
     
     private bool startAttack = false;
     private float distanceFromMan = 0;
@@ -25,7 +25,7 @@ public class GameController : MonoBehaviour
     public GameObject enemyChase;
     public GameObject enemyCutscene;
     private Rigidbody2D enemyrb;
-    public Animator enemyAnimator, enemyArm, treeTrunk, sceneTransition, pressSpaceToStart;
+    public Animator enemyAnimator, enemyArm, treeTrunk, sceneTransition;
 
 
     // Start is called before the first frame update
@@ -35,7 +35,6 @@ public class GameController : MonoBehaviour
         enemyAnimator = enemyCutscene.GetComponent<Animator>();
         enemyAnimator.speed = 0f;
         treeTrunk.speed = 0f;
-        startTime = Time.time;
     }
 
     // Update is called once per frame
@@ -49,6 +48,7 @@ public class GameController : MonoBehaviour
 
     void Update()
     {
+
         if (Input.GetKeyDown(KeyCode.L))
         {
             enemyChase.transform.position = new Vector2(20, enemyChase.transform.position.y);
@@ -72,7 +72,6 @@ public class GameController : MonoBehaviour
                 enemyStartRun = false;
             }
 
-            Debug.Log(player.transform.position.x - enemyChase.transform.position.x);
             if (enemyChase.transform.position.x <= 265)
             {
                 if (distanceFromMan < 21 && startAttack == false)
@@ -105,18 +104,24 @@ public class GameController : MonoBehaviour
                 enemyAnimator.SetBool("FinalAttack", true);
             }
 
-            if (finalAttack && attackCooldown <= Time.time)
+            if (treeFall == true)
+            {
+                treeTrunk.speed = 0.65f;
+                loadNextScene = true;
+            }
+            /*
+            if (finalAttack && attackCooldown + 0.7  <= Time.time)
             {
                 treeTrunk.speed = 0.75f;
                 loadNextScene = true;
 
             }
-            if (finalAttack && attackCooldown  <= Time.time)
+            if (finalAttack && attackCooldown + 0.7  <= Time.time)
             {
                 loadNextScene = true;
             }
-
-
+            */
+            Debug.Log(treeFall);
             if (startAttack == true)
             {
                 enemyArm.Play("Attack");
@@ -132,7 +137,7 @@ public class GameController : MonoBehaviour
                 }
                 if (finalAttack && sceneTransitionCooldown <= Time.time)
                 {
-                    SceneManager.LoadScene(1);
+                    SceneManager.LoadScene(2);
                 }
 
             }

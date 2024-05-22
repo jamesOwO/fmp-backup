@@ -12,6 +12,8 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
+    public bool treeFall = false;
+
     public GameController gameController;
 
     public int scene;
@@ -27,6 +29,8 @@ public class PlayerController : MonoBehaviour
     private bool Jumpable = true, jumpDelay = false, moving = true, isjumping, grounded = false, isRunning = false, playerDead = false, sceneTransitionStart = false;
 
     public float moveSpeed, jumpForceUp, jumpForceRight;
+
+    private float startTime;
 
     private bool endGame = false;
 
@@ -58,11 +62,12 @@ public class PlayerController : MonoBehaviour
             moving = false;
             Jumpable = false;
         }
+        startTime = Time.time;
+
     }
 
     void FixedUpdate()
     {
-        Debug.Log("Movement - " + playerAcceleration);
         if (menuActive == false)
         {
             if (moving == true)
@@ -117,10 +122,15 @@ public class PlayerController : MonoBehaviour
     }
     private void Update()
     {
-        Debug.Log(grounded + " Grounded");
 
         if (menuActive == false)
         {
+            if (startTime + 5f <= Time.time + startTime && scene == 1 && startGame == false)
+            {
+                pressstarttoplay.SetBool("FadeIn", true);
+
+            }
+
             animator.speed = 1f;
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -129,7 +139,6 @@ public class PlayerController : MonoBehaviour
                     playerAcceleration = 0;
                     jumpDirection = movehorizontal;
                     rb.velocity = new Vector2(rb.velocity.x, jumpForceUp);
-                    Debug.Log("Jump");
                     animator.SetBool("Jumping", true);
                     jumpCooldown = Time.time + 1f;
                     jumpDelay = true;
@@ -137,6 +146,9 @@ public class PlayerController : MonoBehaviour
                 }
                 if (startGame == false && scene == 1)
                 {
+                    pressstarttoplay.SetBool("FadeIn", false);
+
+
                     gameController.wakeEnemy = true;
                     startGame = true;
                     cageAnimator.SetBool("Fall", true);
@@ -183,14 +195,12 @@ public class PlayerController : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.R) && playerDead == false)
         {
-            Debug.Log("restart");
             playerDead = true;
         }
         
 
         if (playerDead == true)
         {
-            Debug.Log("restarting");
             moving= false;
             animator.speed = 0f;
             cageAnimator.speed = 0f;
@@ -218,7 +228,6 @@ public class PlayerController : MonoBehaviour
 
             if (sceneTransitionStart == false)
             {
-                Debug.Log("ooga");
                 sceneTransition.SetBool("Fade", true);
                 sceneTransitionCooldown = Time.time + 3;
                 sceneTransitionStart = true;
